@@ -1,0 +1,404 @@
+{
+ "source": "https://www.openminion.com/docs/",
+ "package": "openminion",
+ "version": "0.1.20",
+ "model": "ollama/qwen2.5:7b",
+ "stats": {
+  "links": 910,
+  "refs": 425,
+  "python_blocks": 34,
+  "cli_commands": 407
+ },
+ "ledger": {
+  "new": [
+   "cli_unknown_command|docs__guides__scheduled-tasks.md|openminion cron tick",
+   "cli_unknown_command|docs__guides__skills-and-retrieval.md|openminion skill learning-observation-list --agent-id <agent-id>",
+   "cli_unknown_command|docs__reference__cli-commands.md|openminion cron tick",
+   "missing_symbol|docs__guides__observability.md|`openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter`",
+   "missing_symbol|docs__guides__observability.md|`openminion.token_usage.v1`",
+   "missing_symbol|docs__guides__observability.md|`openminion.turn_cost.v1`",
+   "missing_symbol|docs__guides__sessions-and-history.md|`openminion.token_usage.v1`",
+   "missing_symbol|docs__reference__cli-commands.md|`openminion.token_usage.v1`",
+   "missing_symbol|docs__reference__openminion-api.md|`openminion.eval`",
+   "missing_symbol|docs__unicode-animatio.md|`openminion.cli.animation_providers`"
+  ],
+  "still_open": [],
+  "fixed": []
+ },
+ "triaged": [
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__guides__sessions-and-history.md",
+    "line": 105,
+    "claim": "`openminion.token_usage.v1`",
+    "evidence": "openminion has no attribute 'token_usage'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The documentation claims that the JSON response uses the `openminion.token_usage.v1` envelope, but the `openminion` package does not have an attribute named `token_usage`. The closest available symbol is `subagent`, which is not related to `token_usage`.",
+    "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The documentation claims that the JSON response uses the `openminion.token_usage.v1` envelope, but the `openminion` package does not have an attribute named `token_usage`. The closest available symbol is `subagent`, which is not related to `token_usage`.",
+     "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documentation claims that the JSON response uses the `openminion.token_usage.v1` envelope, but the `openminion` package does not have an attribute named `token_usage`.\n- The attribute `TokenUsageSchemaVersion` in `openminion/modules/telemetry/usage/contracts.py` is set to `\"openminion.token_usage.v1\"`.\n- This suggests that `openminion.token_usage.v1` is likely a string constant used in the code, not an import path or a callable object.\n- The presence of this string in multiple files (both as a literal and in a type annotation) indicates that it is a key or version identifier, not a module or function.\n- The closest available symbol is `subagent`, which is not related to `token_usage`.\n- The `grep_source` result in `openminion/cli/commands/status/token_report.py` mentions the `openminion.token_usage.v1` envelope, further supporting that it is used as a version identifier in the JSON response.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__sessions-and-history.md:105)",
+    "pack:python_symbol(openminion.token_usage.v1)",
+    "pack:grep_source('token_usage.v1')",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 108.6,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "cli_unknown_command",
+    "doc": "docs__guides__skills-and-retrieval.md",
+    "line": 107,
+    "claim": "openminion skill learning-observation-list --agent-id <agent-id>",
+    "evidence": "`openminion skill` has no subcommand 'learning-observation-list'; available: admit, debug, ingest, list, re-ingest-all, refresh, remove, rollback, show, test, validate"
+   },
+   "verdict": null,
+   "notes": "driftcheck: - The documentation claims `openminion skill learning-observation-list --agent-id <agent-id>` is a valid command.\n- The `openminion skill` command, however, only recognizes subcommands like `ingest`, `admit`, `rollback`, `list`, `refresh`, `re-ingest-all`, `show`, `remove`, `validate`, `test`, and `debug`.\n- The `learning-observation-list` subcommand is actually part of the `skillctl` script, not `openminion` itself, as indicated by the `grep_source` and `cli_help` results.\n- This discrepancy suggests that the documentation might be outdated or there could be a misconfiguration.\n- To resolve this, it might be necessary to update the documentation to reflect the correct command `openminion skillctl learning-observation-list --agent-id <agent-id>` or verify the installation and configuration of the package.",
+   "error": "no submit_facts call; reply was: 'driftcheck: I could not safely update the task conditions. Please restate the current task and its required conditions.'",
+   "tool_calls": [
+    "pack:doc_context(docs__guides__skills-and-retrieval.md:107)",
+    "pack:cli_help('skill')",
+    "pack:grep_source('learning-observation-list')"
+   ],
+   "seconds": 151.3,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "cli_unknown_command",
+    "doc": "docs__guides__scheduled-tasks.md",
+    "line": 98,
+    "claim": "openminion cron tick",
+    "evidence": "`openminion cron` has no subcommand 'tick'; available: create, pause, resume, run, show, status"
+   },
+   "verdict": {
+    "verdict": "confirmed_drift",
+    "category": "stale_command",
+    "explanation": "The documentation suggests `openminion cron tick` as a valid command, but `cli_help` shows no such subcommand. The `tick` function in the code is used internally for status updates and debugging, not as a standalone command.",
+    "evidence": "openminion cron tick",
+    "suggested_fix": "remove or rewrite the passage; the installed version has no equivalent",
+    "facts": {
+     "doc_means": "cli_command",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The documentation suggests `openminion cron tick` as a valid command, but `cli_help` shows no such subcommand. The `tick` function in the code is used internally for status updates and debugging, not as a standalone command.",
+     "evidence": "openminion cron tick"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documentation claims that `openminion cron tick` is a valid command, but `cli_help` shows that `tick` is not a subcommand of `openminion cron`.\n- `grep_source` reveals that `tick` is used in several places within the codebase, such as in the `progress` module and the `daemon` module, but not as a direct command.\n- `tick` in the code seems to be a function or method used for status updates and debugging purposes.\n- The `tick` command mentioned in the documentation might be a typo or an outdated reference.\n- The `tick` function in the source code does not appear to be a standalone command but a part of a larger system for managing scheduler status.\n- Based on the evidence, the documentation may contain an error, and `openminion cron` does not support a `tick` subcommand.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__scheduled-tasks.md:98)",
+    "pack:cli_help('cron')",
+    "pack:grep_source('tick')",
+    "submit_facts(doc_means='cli_command', exists=False)"
+   ],
+   "seconds": 129.9,
+   "issue": {
+    "title": "Stale documentation for openminion cron command",
+    "body": "**Summary**: The documentation suggests `openminion cron tick` as a valid command, but `cli_help` shows no such subcommand.\n\n**Where**: `docs__guides__scheduled-tasks.md`, line 98.\n\n**Steps to reproduce**:\n1. Refer to the documentation.\n2. Attempt to run the `openminion cron tick` command.\n\n**Expected**: The documentation states `openminion cron tick` is a valid subcommand.\n\n**Actual**: The command is not recognized by the `openminion cron` command.\n\n**Suggested fix**: Remove or rewrite the passage as `tick` is an internal function, not a standalone command.\n\n**Environment**: openminion 0.1.20 installed from PyPI."
+   }
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__guides__observability.md",
+    "line": 17,
+    "claim": "`openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter`",
+    "evidence": "openminion.modules.telemetry has no attribute 'otel_export'"
+   },
+   "verdict": {
+    "verdict": "confirmed_drift",
+    "category": "stale_import_path",
+    "explanation": "The documentation at line 17 of docs__guides__observability.md specifies `openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter`, but the code has no attribute or submodule `otel_export`. The correct import path is `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter` as defined at `openminion/modules/telemetry/export/otel.py:130`.",
+    "evidence": "docs__guides__observability.md:17",
+    "suggested_fix": "use `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter`",
+    "facts": {
+     "doc_means": "import_path",
+     "exists_as_documented": false,
+     "working_alternative": "openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter",
+     "explanation": "The documentation at line 17 of docs__guides__observability.md specifies `openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter`, but the code has no attribute or submodule `otel_export`. The correct import path is `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter` as defined at `openminion/modules/telemetry/export/otel.py:130`.",
+     "evidence": "docs__guides__observability.md:17"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: Based on the available evidence, the correct import path for the `OpenTelemetryTraceExporter` is `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter` as defined at `openminion/modules/telemetry/export/otel.py:130`.\n\nTo ensure consistency, please update the doc text at line 17 to use the correct import path:\n\n```markdown\n- `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter`\n```\n\nThis correction will align the documentation with the actual implementation.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__observability.md:17)",
+    "pack:python_symbol(openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter)",
+    "pack:grep_source('otel_export.OpenTelemetryTraceExporter')",
+    "grep_source('otel_export.OpenTelemetryTraceExporter')",
+    "python_symbol(openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter)",
+    "submit_facts(doc_means='import_path', exists=False)"
+   ],
+   "seconds": 201.3,
+   "issue": {
+    "title": "Incorrect import path in documentation",
+    "body": "**Summary**\nA documentation drift has been identified in the file `docs__guides__observability.md` at line 17.\n\n**Where**\n`docs__guides__observability.md`\n\n**Steps to reproduce**\n1. Open the file `docs__guides__observability.md`.\n2. Navigate to line 17.\n3. Observe the incorrect import path specified: `openminion.modules.telemetry.otel_export.OpenTelemetryTraceExporter`.\n\n**Expected**\nThe correct import path is `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter`.\n\n**Actual**\nThe documentation specifies the incorrect path.\n\n**Suggested fix**\nReplace the import path with `openminion.modules.telemetry.export.otel.OpenTelemetryTraceExporter`.\n\n**Environment**\n- Project version: openminion 0.1.20 installed from PyPI"
+   }
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__guides__observability.md",
+    "line": 57,
+    "claim": "`openminion.token_usage.v1`",
+    "evidence": "openminion has no attribute 'token_usage'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "`openminion.token_usage.v1` is used as a string literal in the code to define a schema version and emit the raw envelope. This aligns with the documentation.",
+    "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": true,
+     "working_alternative": "none",
+     "explanation": "`openminion.token_usage.v1` is used as a string literal in the code to define a schema version and emit the raw envelope. This aligns with the documentation.",
+     "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: Based on the code around line 5 in `openminion/modules/telemetry/usage/contracts.py`, `openminion.token_usage.v1` is used as a literal string to define a schema version. This indicates that it is not being imported or used as a module but as a name or value.\n\nSince `openminion.token_usage.v1` is used as a string literal in the code, it aligns with the documentation claim that it emits the raw `openminion.token_usage.v1` envelope. This usage is consistent and does not require any additional investigation.\n\nThe discrepancy might be a documentation issue or a static checker failing to recognize the usage pattern. Given the context, the symbol `openminion.token_usage.v1` is correctly used as a string value in the codebase.\n\nAnswer: The documentation `openminion.token_usage.v1` is correctly used as a string value in the code, as evidenced by its usage in defining schema versions and emitting the raw envelope. No further action is required based on the available tools and evidence.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__observability.md:57)",
+    "pack:python_symbol(openminion.token_usage.v1)",
+    "pack:grep_source('token_usage.v1')",
+    "grep_source('token_usage.v1')",
+    "python_symbol(openminion.token_usage.v1)",
+    "read_source(openminion/modules/telemetry/usage/contracts.py:1-40)",
+    "submit_facts(doc_means='name_or_identifier', exists=True)"
+   ],
+   "seconds": 289.8,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__guides__observability.md",
+    "line": 66,
+    "claim": "`openminion.turn_cost.v1`",
+    "evidence": "openminion has no attribute 'turn_cost'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The documented `openminion.turn_cost.v1` is used as a name or value, not as an import path. It appears in `openminion/modules/telemetry/trace/turn_cost.py` at line 17 as a schema version string.",
+    "evidence": "openminion/modules/telemetry/trace/turn_cost.py:17: schema_version: str = \"openminion.turn_cost.v1\"",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The documented `openminion.turn_cost.v1` is used as a name or value, not as an import path. It appears in `openminion/modules/telemetry/trace/turn_cost.py` at line 17 as a schema version string.",
+     "evidence": "openminion/modules/telemetry/trace/turn_cost.py:17: schema_version: str = \"openminion.turn_cost.v1\""
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documented `openminion.turn_cost.v1` is used as a name or value, not as an import path.\n- It appears in `openminion/modules/telemetry/trace/turn_cost.py` at line 17.\n- The code uses `openminion.turn_cost.v1` as a schema version.\n- The static checker evidence shows that `openminion` has no attribute or submodule `turn_cost`.\n- The closest names are `tools` and `TurnTimeoutError`.\n- This discrepancy suggests that `openminion.turn_cost.v1` is likely a placeholder or a name used in documentation but not implemented in the code.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__observability.md:66)",
+    "pack:python_symbol(openminion.turn_cost.v1)",
+    "pack:grep_source('turn_cost.v1')",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 143.2,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__guides__observability.md",
+    "line": 87,
+    "claim": "`openminion.turn_cost.v1`",
+    "evidence": "openminion has no attribute 'turn_cost'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The document states `openminion.turn_cost.v1` but the code has no attribute or submodule named `turn_cost`. The string `openminion.turn_cost.v1` is used as a schema version in the code.",
+    "evidence": "openminion/modules/telemetry/trace/turn_cost.py:17",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The document states `openminion.turn_cost.v1` but the code has no attribute or submodule named `turn_cost`. The string `openminion.turn_cost.v1` is used as a schema version in the code.",
+     "evidence": "openminion/modules/telemetry/trace/turn_cost.py:17"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The document claims `openminion.turn_cost.v1` is used, but `openminion` has no attribute or submodule named `turn_cost`.\n- `openminion.turn_cost.v1` is used as a name or value, not as an import path.\n- It appears in `openminion/modules/telemetry/trace/turn_cost.py:17` as the schema version.\n- The `grep_source` tool confirms its presence as a string literal.\n- The static checker evidence and the document are consistent in showing the name is used, but the attribute does not exist in the code.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__guides__observability.md:87)",
+    "pack:python_symbol(openminion.turn_cost.v1)",
+    "pack:grep_source('turn_cost.v1')",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 98.9,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__unicode-animatio.md",
+    "line": 33,
+    "claim": "`openminion.cli.animation_providers`",
+    "evidence": "openminion.cli has no attribute 'animation_providers'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The `openminion.cli.animation_providers` entry point is defined in the file `openminion/cli/presentation/animation/registry.py` but `openminion.cli` module does not have an `animation_providers` attribute or submodule. It is likely an external package entry point.",
+    "evidence": "openminion/cli/presentation/animation/registry.py:17",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The `openminion.cli.animation_providers` entry point is defined in the file `openminion/cli/presentation/animation/registry.py` but `openminion.cli` module does not have an `animation_providers` attribute or submodule. It is likely an external package entry point.",
+     "evidence": "openminion/cli/presentation/animation/registry.py:17"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: Based on the provided evidence, the `openminion.cli.animation_providers` entry point is defined in the file `openminion/cli/presentation/animation/registry.py` at line 17. The documentation in `docs__unicode-animatio.md` at line 33 mentions that this entry point should be available, but the `openminion.cli` module does not have an `animation_providers` attribute or submodule.\n\nThe closest names to `openminion.cli.animation_providers` are none, which means it might be an entry point for an external package or a typo in the documentation.\n\nHere is the relevant code snippet from `openminion/cli/presentation/animation/registry.py`:\n```python\n15| ENTRY_POINT_GROUP = \"openminion.cli.animation_providers\"\n```\n\nThis suggests that `openminion.cli.animation_providers` is likely an entry point for a package rather than a local attribute or submodule. The documentation might be referring to an external package that should be installed to provide this functionality.\n\nTo resolve the candidate mismatch, ensure that the external package providing `openminion.cli.animation_providers` is installed. If it is a known package, you can install it using a package manager like pip.\n\nIf the package name is known, please provide the package name, and I can assist with the installation. If the package name is unknown, it might be a typo or an internal package that hasn't been properly documented.\n\nFinal answer: The `openminion.cli.animation_providers` entry point is defined in the file `openminion/cli/presentation/animation/registry.py`, but the `openminion.cli` module does not have this attribute or submodule. It is likely an external package entry point. Ensure the correct package is installed if it is known. If the package name is unknown, it might be a typo or an internal package that hasn't been properly documented.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__unicode-animatio.md:33)",
+    "pack:python_symbol(openminion.cli.animation_providers)",
+    "pack:grep_source('cli.animation_providers')",
+    "grep_source('openminion.cli.animation_providers')",
+    "python_symbol(openminion.cli.animation_providers)",
+    "read_source(openminion/cli/presentation/animation/registry.py:1-40)",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 236.1,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__reference__cli-commands.md",
+    "line": 642,
+    "claim": "`openminion.token_usage.v1`",
+    "evidence": "openminion has no attribute 'token_usage'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The documentation mentions `openminion.token_usage.v1`, but the code does not have an attribute or submodule named `token_usage`. The string `openminion.token_usage.v1` is used as a literal name or value, likely indicating a schema or constant.",
+    "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The documentation mentions `openminion.token_usage.v1`, but the code does not have an attribute or submodule named `token_usage`. The string `openminion.token_usage.v1` is used as a literal name or value, likely indicating a schema or constant.",
+     "evidence": "openminion/modules/telemetry/usage/contracts.py:5, openminion/cli/commands/status/token_report.py:990"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documentation claims `openminion.token_usage.v1` is used, but the code in `openminion` does not have an attribute or submodule named `token_usage`.\n- `openminion.token_usage.v1` appears in `openminion/modules/telemetry/usage/contracts.py` as a literal string and is used as a name or value.\n- `token_usage.v1` is referenced in `openminion/cli/commands/status/token_report.py` in the context of a string, not as a module or attribute.\n- The discrepancy suggests that `openminion.token_usage.v1` might be a schema or constant rather than an importable module or class.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__reference__cli-commands.md:642)",
+    "pack:python_symbol(openminion.token_usage.v1)",
+    "pack:grep_source('token_usage.v1')",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 112.4,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "cli_unknown_command",
+    "doc": "docs__reference__cli-commands.md",
+    "line": 584,
+    "claim": "openminion cron tick",
+    "evidence": "`openminion cron` has no subcommand 'tick'; available: create, pause, resume, run, show, status"
+   },
+   "verdict": {
+    "verdict": "confirmed_drift",
+    "category": "stale_command",
+    "explanation": "The documentation for `openminion cron` in `docs__reference__cli-commands.md` at line 584 claims `tick` is a subcommand, but `cli_help` shows no such subcommand exists. The `tick` references found in the source code are related to status updates and not a standalone `cron` subcommand.",
+    "evidence": "openminion cron tick",
+    "suggested_fix": "remove or rewrite the passage; the installed version has no equivalent",
+    "facts": {
+     "doc_means": "cli_command",
+     "exists_as_documented": false,
+     "working_alternative": "None of the available subcommands match `tick`. The correct subcommands are `create`, `status`, `pause`, `resume`, `show`, and `run`.",
+     "explanation": "The documentation for `openminion cron` in `docs__reference__cli-commands.md` at line 584 claims `tick` is a subcommand, but `cli_help` shows no such subcommand exists. The `tick` references found in the source code are related to status updates and not a standalone `cron` subcommand.",
+     "evidence": "openminion cron tick"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documentation claims `openminion cron tick` is a subcommand, but `cli_help` shows no such subcommand exists; available commands are `create`, `status`, `pause`, `resume`, `show`, and `run`.\n- `grep_source` finds several references to `tick` in the source code, but these appear to be related to status updates and not a standalone `cron` subcommand.\n- The `tick` references suggest it is used internally for status line updates, but not as a direct `cron` subcommand.\n- The documentation might be outdated or there could be a typo. The correct usage of `cron` based on `cli_help` should be referenced in the docs.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__reference__cli-commands.md:584)",
+    "pack:cli_help('cron')",
+    "pack:grep_source('tick')",
+    "submit_facts(doc_means='cli_command', exists=False)"
+   ],
+   "seconds": 135.9,
+   "issue": null
+  },
+  {
+   "mismatch": {
+    "kind": "missing_symbol",
+    "doc": "docs__reference__openminion-api.md",
+    "line": 370,
+    "claim": "`openminion.eval`",
+    "evidence": "openminion has no attribute 'eval'"
+   },
+   "verdict": {
+    "verdict": "false_positive",
+    "category": "not_an_api_reference",
+    "explanation": "The documentation claims `openminion.eval` exists, but the static checker and source code search indicate it does not.",
+    "evidence": "docs__reference__openminion-api.md:370",
+    "suggested_fix": "none",
+    "facts": {
+     "doc_means": "name_or_identifier",
+     "exists_as_documented": false,
+     "working_alternative": "none",
+     "explanation": "The documentation claims `openminion.eval` exists, but the static checker and source code search indicate it does not.",
+     "evidence": "docs__reference__openminion-api.md:370"
+    },
+    "guardrail": ""
+   },
+   "notes": "driftcheck: - The documentation claims `openminion.eval` exists, but the static checker and source code search indicate it does not.\n- `openminion.eval` is referenced as a separate package for deterministic suites, baseline diffs, scorers, and replay reports.\n- There are no public `openminion.eval` modules in the runtime distribution.\n- The closest names in `openminion` are not related to `eval`.\n- The task objective is to resolve the candidate mismatch regarding the missing `openminion.eval` symbol.",
+   "error": null,
+   "tool_calls": [
+    "pack:doc_context(docs__reference__openminion-api.md:370)",
+    "pack:python_symbol(openminion.eval)",
+    "pack:grep_source('openminion.eval')",
+    "submit_facts(doc_means='name_or_identifier', exists=False)"
+   ],
+   "seconds": 82.2,
+   "issue": null
+  }
+ ],
+ "untriaged": []
+}
