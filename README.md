@@ -23,6 +23,12 @@ class from a path that moved, you lose an hour before you suspect the docs. Drif
 
 Nothing is posted anywhere automatically. Issue drafts are files for a human to review.
 
+**Demo video (2:40, no audio):** [`docs/video/driftcheck-demo.mp4`](docs/video/driftcheck-demo.mp4), built by
+`docs/video/make_video.py` from the real run log and findings in `reports/site/` (terminal scenes replay that log
+with time compressed).
+
+![pipeline](docs/video/pipeline.png)
+
 ## Results on the OpenMinion docs (2026-11-11)
 
 Scan of <https://www.openminion.com/docs/> (99 pages) against `openminion==0.1.20` from PyPI, local qwen2.5 7B:
@@ -48,7 +54,7 @@ False positives the agent filtered: schema versions such as `openminion.token_us
 `openminion.turn_cost.v1`, the entry-point group `openminion.cli.animation_providers`, and a sentence that says
 `openminion.eval` does *not* exist. The repository's own `docs/` folder had no drift (144 CLI lines, 100 links).
 
-Findings about OpenMinion itself, written up as issue drafts in [`upstream-issues/`](upstream-issues/):
+Findings about OpenMinion itself, filed as openminion/openminion#724, #725, #726, #727 and a reproduction comment on #720 (drafts in [`upstream-issues/`](upstream-issues/)):
 `forced_tools` is not enforced on Ollama; Ollama `num_ctx` cannot be set (patch in
 [`upstream-patches/`](upstream-patches/)); the freshness verifier replaces valid answers to local tasks;
 #720 (closure step truncates `output_type` JSON) reproduces on Ollama.
