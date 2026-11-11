@@ -1,0 +1,92 @@
+diff --git a/src/openminion/modules/llm/providers/ollama/adapter.py b/src/openminion/modules/llm/providers/ollama/adapter.py
+index 4e7b4da..e050a76 100644
+--- a/src/openminion/modules/llm/providers/ollama/adapter.py
++++ b/src/openminion/modules/llm/providers/ollama/adapter.py
+@@ -2,6 +2,7 @@ import json
+ import time
+ from typing import Any
+ 
++from openminion.base.config.parse import _as_int
+ from openminion.modules.llm.reasoning import (
+     normalize_optional_reasoning_profile,
+ )
+@@ -203,6 +204,17 @@ def _resolve_ollama_schema_format(request: LLMRequest) -> dict[str, Any] | str |
+     return dict(schema) if isinstance(schema, dict) else "json"
+ 
+ 
++def _resolve_ollama_num_ctx(config: dict[str, Any]) -> int | None:
++    """Context window to request from Ollama (``options.num_ctx``).
++
++    Without it Ollama falls back to its server default context length, which
++    can be smaller than an OpenMinion turn (system prompt plus tool schemas).
++    Set it per connection with ``provider_config_overrides: {"num_ctx": 16384}``.
++    """
++    value = _as_int(config.get("num_ctx"), 0)
++    return value if value > 0 else None
++
++
+ def _resolve_ollama_think(request: LLMRequest) -> bool | None:
+     metadata = request.metadata
+     raw_profile = (
+@@ -280,6 +292,9 @@ class OllamaProvider:
+             payload["options"]["num_predict"] = request.max_output_tokens
+         if request.stop:
+             payload["options"]["stop"] = request.stop
++        num_ctx = _resolve_ollama_num_ctx(config)
++        if num_ctx is not None:
++            payload["options"]["num_ctx"] = num_ctx
+ 
+         headers = {"Content-Type": "application/json"}
+         if api_key:
+diff --git a/tests/llm/test_providers_http.py b/tests/llm/test_providers_http.py
+index cd23d8f..f34c27c 100644
+--- a/tests/llm/test_providers_http.py
++++ b/tests/llm/test_providers_http.py
+@@ -2701,6 +2701,47 @@ class ProviderHTTPTests(unittest.TestCase):
+         self.assertTrue(response.ok)
+         self.assertEqual(captured["body"]["think"], False)
+ 
++    def _ollama_request_body(self, config: dict[str, Any]) -> dict[str, Any]:
++        provider = OllamaProvider()
++        request = LLMRequest.model_validate(
++            {"messages": [{"role": "user", "content": "hello"}]}
++        )
++        payload = {
++            "model": "qwen2.5:7b",
++            "message": {"role": "assistant", "content": "hello"},
++            "prompt_eval_count": 5,
++            "eval_count": 2,
++        }
++        captured: dict[str, Any] = {}
++
++        def _fake_urlopen(http_request, timeout=None):
++            del timeout
++            captured["body"] = json.loads(http_request.data.decode("utf-8"))
++            return _FakeHTTPResponse(payload)
++
++        with patch(
++            "openminion.modules.llm.providers.adapters.urllib_request.urlopen",
++            side_effect=_fake_urlopen,
++        ):
++            response = provider.complete(request, config)
++        self.assertTrue(response.ok)
++        return captured["body"]
++
++    def test_ollama_forwards_configured_num_ctx(self) -> None:
++        body = self._ollama_request_body(
++            {"base_url": "http://127.0.0.1:11434", "num_ctx": 16384}
++        )
++        self.assertEqual(body["options"]["num_ctx"], 16384)
++
++    def test_ollama_omits_num_ctx_when_not_configured(self) -> None:
++        for config in (
++            {"base_url": "http://127.0.0.1:11434"},
++            {"base_url": "http://127.0.0.1:11434", "num_ctx": 0},
++            {"base_url": "http://127.0.0.1:11434", "num_ctx": "not-a-number"},
++        ):
++            body = self._ollama_request_body(config)
++            self.assertNotIn("num_ctx", body["options"])
++
+     def test_ollama_hides_think_blocks_from_visible_output(self) -> None:
+         provider = OllamaProvider()
+         request = LLMRequest.model_validate(
