@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.omhome/
+.openminion/
+cache/
+upstream/
+reports/trial/
+*.log
